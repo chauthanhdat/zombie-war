@@ -17,13 +17,13 @@ MonoBehaviour:
   weaponIcon: {fileID: 21300000, guid: 2d193da356502104ab1cb2d5da99ef54, type: 3}
   weaponPrefab: {fileID: 1562996608389564, guid: a1608518da2a041418e8a5351d223d94, type: 3}
   damage: 25
-  fireRate: 1
+  fireRate: 5
   range: 10
-  ammoCapacity: 30
-  reloadTime: 2
-  currentAmmo: 30
-  fireSound: {fileID: 0}
-  reloadSound: {fileID: 0}
+  ammoCapacity: 8
+  reloadTime: 1.5
+  currentAmmo: 8
+  fireSound: {fileID: 8300000, guid: f70587eee96534d2d82672c909506b9f, type: 3}
+  reloadSound: {fileID: 8300000, guid: 188538590837f4c0dbd14ddf66d5256d, type: 3}
   emptyClipSound: {fileID: 0}
   muzzleFlashEffect: {fileID: 0}
   impactEffect: {fileID: 0}

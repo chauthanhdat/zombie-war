@@ -22,7 +22,7 @@ namespace ZombieWar.Gameplay.Weapons
         
         private float lastFireTime;
         private float lastMeleeTime;
-        private UnityEngine.Camera playerCamera;
+        private Camera playerCamera;
 
         // Properties
         public WeaponData CurrentWeapon => currentWeapon;
@@ -72,6 +72,8 @@ namespace ZombieWar.Gameplay.Weapons
         {
             (secondaryWeapon, currentWeapon) = (currentWeapon, secondaryWeapon);
             UpdateWeaponDisplay();
+
+            AudioManager.Instance.PlaySFX(currentWeapon.reloadSound);
 
             GameEvent.OnWeaponSwitched?.Invoke();
         }
@@ -257,7 +259,7 @@ namespace ZombieWar.Gameplay.Weapons
             // Play fire sound
             if (weapon.fireSound != null)
             {
-                AudioSource.PlayClipAtPoint(weapon.fireSound, firePoint.position);
+                AudioManager.Instance.PlaySFX(weapon.fireSound);
             }
             
             // Spawn muzzle flash

@@ -42,8 +42,6 @@ namespace ZombieWar.Gameplay.Player
             float closestDistance = float.MaxValue;
             Transform nearestTarget = null;
 
-            Debug.LogError($"Found {hits.Length} targets.");
-
             foreach (var hit in hits)
             {
                 float distance = Vector3.Distance(transform.position, hit.transform.position);

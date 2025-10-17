@@ -114,22 +114,6 @@ namespace ZombieWar.UI.Gameplay
             }
         }
         
-        private void UpdateSlotInfo(TextMeshProUGUI nameText, WeaponData weapon)
-        {
-            if (nameText != null)
-            {
-                nameText.text = weapon != null ? weapon.weaponName : "Empty";
-            }
-        }
-        
-        private void UpdateSlotName(TextMeshProUGUI textComponent, WeaponData weapon)
-        {
-            if (textComponent != null)
-            {
-                textComponent.text = weapon != null ? weapon.weaponName : "Empty";
-            }
-        }
-        
         private void OnDestroy()
         {
             // Events cleanup if needed in the future
