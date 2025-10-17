@@ -37,11 +37,11 @@ namespace ZombieWar.Gameplay.Player
         public WeaponController WeaponController => weaponController;
         
         private float MoveSpeed => 5f;
-        
+
         private void Awake()
         {
             characterController = GetComponent<CharacterController>();
-            
+
             if (weaponController == null)
             {
                 weaponController = GetComponent<WeaponController>();
@@ -55,7 +55,7 @@ namespace ZombieWar.Gameplay.Player
             HandleMovement();
             HandleRotation();
         }
-        
+
         private void HandleInput()
         {
             float horizontal = joystick.Horizontal;
