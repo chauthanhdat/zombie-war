@@ -7,15 +7,16 @@ namespace ZombieWar.Gameplay.Player
     [RequireComponent(typeof(CharacterController), typeof(WeaponController))]
     public class PlayerController : MonoBehaviour
     {
-        [Header("Configuration")]
-        public CharacterStats playerStats;
-
         [Header("Input")]
         public FloatingJoystick joystick;
         public KeyCode runKey = KeyCode.LeftShift;
 
         [Header("Movement Settings")]
         public float runSpeedMultiplier = 1.5f;
+        
+        [Header("Gravity Settings")]
+        public float gravity = -9.81f;
+        public float groundedGravity = -0.05f;
         
         [Header("Components")]
         public Animator animator;
@@ -25,15 +26,17 @@ namespace ZombieWar.Gameplay.Player
         
         private CharacterController characterController;
         private Vector3 moveDirection;
+        private Vector3 velocity;
         private bool isRunning;
         
         // Properties
         public bool IsMoving => moveDirection.magnitude > 0.1f;
         public bool IsRunning => isRunning;
         public float CurrentSpeed => isRunning ? MoveSpeed * runSpeedMultiplier : MoveSpeed;
+        public bool IsGrounded => characterController.isGrounded;
         public WeaponController WeaponController => weaponController;
         
-        private float MoveSpeed => playerStats ? playerStats.moveSpeed : 5f;
+        private float MoveSpeed => 5f;
         
         private void Awake()
         {
@@ -48,6 +51,7 @@ namespace ZombieWar.Gameplay.Player
         private void Update()
         {
             HandleInput();
+            HandleGravity();
             HandleMovement();
             HandleRotation();
         }
@@ -61,26 +65,48 @@ namespace ZombieWar.Gameplay.Player
             isRunning = Input.GetKey(runKey) && IsMoving;
         }
         
+        private void HandleGravity()
+        {
+            if (IsGrounded)
+            {
+                // Apply small downward force to keep player grounded
+                velocity.y = groundedGravity;
+            }
+            else
+            {
+                // Apply gravity when not grounded (falling)
+                velocity.y += gravity * Time.deltaTime;
+            }
+            
+            // Clamp falling velocity to prevent excessive speed
+            velocity.y = Mathf.Max(velocity.y, gravity * 2f);
+        }
+        
         private void HandleMovement()
         {
+            // Horizontal movement
             Vector3 move = moveDirection * CurrentSpeed;
-            characterController.Move(move * Time.deltaTime);
+            
+            // Combine horizontal movement with vertical velocity (gravity)
+            Vector3 finalMovement = new Vector3(move.x, velocity.y, move.z);
+            
+            characterController.Move(finalMovement * Time.deltaTime);
 
             animator.SetFloat("Velocity", moveDirection.magnitude);
         }
-        
+
         private void HandleRotation()
         {
             if (IsMoving)
             {
                 Vector3 lookDirection = moveDirection;
                 lookDirection.y = 0f;
-                
+
                 if (lookDirection != Vector3.zero)
                 {
                     Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-                    float rotationSpeed = playerStats ? playerStats.rotationSpeed : 180f;
-                    
+                    float rotationSpeed = 180f;
+
                     transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
                 }
             }
@@ -108,6 +134,30 @@ namespace ZombieWar.Gameplay.Player
         public WeaponData GetCurrentWeapon()
         {
             return weaponController?.CurrentWeapon;
+        }
+        
+        /// <summary>
+        /// Reset vertical velocity (useful for teleporting or respawning)
+        /// </summary>
+        public void ResetVerticalVelocity()
+        {
+            velocity.y = 0f;
+        }
+        
+        /// <summary>
+        /// Apply an upward force (for jumping or knockback effects)
+        /// </summary>
+        public void ApplyVerticalForce(float force)
+        {
+            velocity.y = force;
+        }
+        
+        /// <summary>
+        /// Get current vertical velocity
+        /// </summary>
+        public float GetVerticalVelocity()
+        {
+            return velocity.y;
         }
     }
 }

@@ -13,8 +13,7 @@ namespace ZombieWar.Gameplay.Weapons
         
         [Header("Transform References")]
         public Transform firePoint;
-        public Transform meleeWeaponModel;
-        public Transform rangedWeaponModel;
+        public Transform weaponModel;
         
         [Header("Weapon States")]
         [SerializeField] private bool isReloading;
@@ -140,7 +139,7 @@ namespace ZombieWar.Gameplay.Weapons
         private void ProcessRangedHit(RaycastHit hit, WeaponData weapon)
         {
             // Check if we hit an enemy
-            var enemy = hit.collider.GetComponent<ZombieWar.Gameplay.Combat.Health>();
+            var enemy = hit.collider.GetComponent<IDamageable>();
             if (enemy != null)
             {
                 enemy.TakeDamage(weapon.damage);
@@ -153,7 +152,7 @@ namespace ZombieWar.Gameplay.Weapons
                 GameObject impact = Instantiate(weapon.impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(impact, 2f);
             }
-            
+
             // Debug visualization
             Debug.DrawLine(firePoint.position, hit.point, Color.red, 0.1f);
         }
@@ -234,7 +233,7 @@ namespace ZombieWar.Gameplay.Weapons
             {
                 if (hitCollider.gameObject == gameObject) continue; // Don't hit self
                 
-                var enemy = hitCollider.GetComponent<ZombieWar.Gameplay.Combat.Health>();
+                var enemy = hitCollider.GetComponent<IDamageable>();
                 if (enemy != null)
                 {
                     enemy.TakeDamage(currentWeapon.damage);
@@ -271,44 +270,16 @@ namespace ZombieWar.Gameplay.Weapons
         
         private void UpdateWeaponDisplay()
         {
-            // Update weapon models
-            UpdateMeleeWeaponModel();
-            UpdateRangedWeaponModel();
-        }
-        
-        private void UpdateMeleeWeaponModel()
-        {
-            if (meleeWeaponModel == null) return;
-            
-            // Clear old model
-            foreach (Transform child in meleeWeaponModel)
+            if (weaponModel == null) return;
+
+            foreach (Transform child in weaponModel)
             {
                 Destroy(child.gameObject);
             }
             
-            // Show melee weapon if it's equipped and we have one
             if (currentWeapon != null && currentWeapon.weaponPrefab != null)
             {
-                GameObject meleeModel = Instantiate(currentWeapon.weaponPrefab, meleeWeaponModel);
-                meleeModel.SetActive(currentWeapon.weaponType == WeaponType.Melee);
-            }
-        }
-        
-        private void UpdateRangedWeaponModel()
-        {
-            if (rangedWeaponModel == null) return;
-            
-            // Clear old model
-            foreach (Transform child in rangedWeaponModel)
-            {
-                Destroy(child.gameObject);
-            }
-            
-            // Show current ranged weapon
-            if (currentWeapon != null && currentWeapon.weaponType == WeaponType.Ranged && currentWeapon.weaponPrefab != null)
-            {
-                GameObject rangedModel = Instantiate(currentWeapon.weaponPrefab, rangedWeaponModel);
-                rangedModel.SetActive(currentWeapon.weaponType == WeaponType.Ranged);
+                GameObject weaponVisual = Instantiate(currentWeapon.weaponPrefab, weaponModel);
             }
         }
         

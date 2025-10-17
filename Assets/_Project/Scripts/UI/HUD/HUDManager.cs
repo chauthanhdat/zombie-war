@@ -12,6 +12,7 @@ namespace ZombieWar.UI.HUD
         [Header("Health UI")]
         public Slider healthBar;
         public TextMeshProUGUI healthText;
+        public Image healthBarEffect;
         public Image healthBarFill;
         
         [Header("Score UI")]
@@ -37,7 +38,7 @@ namespace ZombieWar.UI.HUD
         // public GameEvent OnHealthUpdated;
         // public GameEvent OnScoreUpdated;
         
-        private Health playerHealth;
+        private CharacterHealth playerHealth;
         private int currentScore = 0;
         private int killCount = 0;
         
@@ -65,7 +66,7 @@ namespace ZombieWar.UI.HUD
                 GameObject player = GameObject.FindGameObjectWithTag("Player");
                 if (player != null)
                 {
-                    playerHealth = player.GetComponent<Health>();
+                    playerHealth = player.GetComponent<CharacterHealth>();
                 }
                 else
                 {
@@ -74,7 +75,7 @@ namespace ZombieWar.UI.HUD
             }
         }
         
-        public void SetPlayerHealth(Health health)
+        public void SetPlayerHealth(CharacterHealth health)
         {
             playerHealth = health;
             UpdateHealthDisplay();

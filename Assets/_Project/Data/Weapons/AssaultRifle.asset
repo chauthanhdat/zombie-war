@@ -15,7 +15,7 @@ MonoBehaviour:
   weaponName: Assault Rifle
   weaponType: 1
   weaponIcon: {fileID: 21300000, guid: 8a1d5c60915e682498ccc6618da10e7c, type: 3}
-  weaponPrefab: {fileID: 0}
+  weaponPrefab: {fileID: 1900586067242068, guid: ad49a19d2c4adc94b838606a5d459f85, type: 3}
   damage: 25
   fireRate: 1
   range: 10

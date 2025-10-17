@@ -7,11 +7,9 @@ using ZombieWar.Gameplay.Combat;
 namespace ZombieWar.Gameplay.Enemies
 {
     [RequireComponent(typeof(NavMeshAgent))]
-    [RequireComponent(typeof(Health))]
+    [RequireComponent(typeof(IDamageable))]
     public class ZombieAI : StateMachine
     {
-        [Header("Configuration")]
-        public CharacterStats zombieStats;
         public Transform player;
         
         [Header("AI Settings")]
@@ -20,7 +18,7 @@ namespace ZombieWar.Gameplay.Enemies
         public LayerMask playerLayer = 1;
         
         private NavMeshAgent agent;
-        private Health health;
+        private CharacterHealth health;
         
         // States
         private IdleState idleState;
@@ -30,14 +28,14 @@ namespace ZombieWar.Gameplay.Enemies
         
         public Transform Player => player;
         public NavMeshAgent Agent => agent;
-        public Health Health => health;
+        public CharacterHealth Health => health;
         public float DetectionRange => detectionRange;
         public float AttackRange => attackRange;
         
         private void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
-            health = GetComponent<Health>();
+            health = GetComponent<CharacterHealth>();
             
             InitializeStates();
             InitializeAgent();
@@ -58,10 +56,10 @@ namespace ZombieWar.Gameplay.Enemies
         
         private void InitializeAgent()
         {
-            if (zombieStats != null)
-            {
-                agent.speed = zombieStats.moveSpeed;
-            }
+            // if (zombieStats != null)
+            // {
+            //     agent.speed = zombieStats.moveSpeed;
+            // }
         }
         
         public bool CanSeePlayer()
@@ -184,12 +182,12 @@ namespace ZombieWar.Gameplay.Enemies
             }
             
             // Attack logic
-            float attackCooldown = zombie.zombieStats ? zombie.zombieStats.attackCooldown : 1f;
-            if (Time.time - lastAttackTime >= attackCooldown)
-            {
-                PerformAttack();
-                lastAttackTime = Time.time;
-            }
+            // float attackCooldown = zombie.zombieStats ? zombie.zombieStats.attackCooldown : 1f;
+            // if (Time.time - lastAttackTime >= attackCooldown)
+            // {
+            //     PerformAttack();
+            //     lastAttackTime = Time.time;
+            // }
         }
         
         private void PerformAttack()
@@ -198,11 +196,11 @@ namespace ZombieWar.Gameplay.Enemies
             Debug.Log($"{zombie.name} attacks player!");
             
             // Try to damage player
-            Health playerHealth = zombie.Player.GetComponent<Health>();
-            if (playerHealth != null && zombie.zombieStats != null)
-            {
-                playerHealth.TakeDamage(zombie.zombieStats.attackDamage);
-            }
+            var playerHealth = zombie.Player.GetComponent<IDamageable>();
+            // if (playerHealth != null && zombie.zombieStats != null)
+            // {
+            //     playerHealth.TakeDamage(zombie.zombieStats.attackDamage);
+            // }
         }
     }
     
