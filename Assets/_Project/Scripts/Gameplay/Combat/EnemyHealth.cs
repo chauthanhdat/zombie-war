@@ -35,12 +35,19 @@ namespace ZombieWar.Gameplay.Combat
             if (currentHealth <= 0f)
             {
                 OnDeath?.Invoke();
+
+                Die();
             }
         }
 
         public void Heal(float healAmount)
         {
             throw new NotImplementedException();
+        }
+
+        private void Die()
+        {
+            Destroy(gameObject, 3f);
         }
     }
 }

@@ -93,7 +93,10 @@ namespace ZombieWar.Gameplay.Weapons
             {
                 TryFireRanged();
 
-                targetingSystem.CurrentTarget.GetComponent<IDamageable>()?.TakeDamage(currentWeapon.damage);
+                if (targetingSystem.CurrentTarget != null)
+                {
+                    targetingSystem.CurrentTarget.GetComponent<IDamageable>()?.TakeDamage(currentWeapon.damage);
+                }
             }
             else if (currentWeapon.weaponType == WeaponType.Melee)
             {
@@ -161,9 +164,6 @@ namespace ZombieWar.Gameplay.Weapons
                 GameObject impact = Instantiate(weapon.impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(impact, 2f);
             }
-
-            // Debug visualization
-            Debug.DrawLine(firePoint.position, hit.point, Color.red, 0.1f);
         }
         
         private void TryReload()

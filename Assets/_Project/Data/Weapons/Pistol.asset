@@ -15,7 +15,7 @@ MonoBehaviour:
   weaponName: Pistol
   weaponType: 1
   weaponIcon: {fileID: 21300000, guid: 2d193da356502104ab1cb2d5da99ef54, type: 3}
-  weaponPrefab: {fileID: 1562996608389564, guid: a1608518da2a041418e8a5351d223d94, type: 3}
+  weaponPrefab: {fileID: 3356501522573297259, guid: 958900c353cbd41f887533bbf0e0d0de, type: 3}
   damage: 25
   fireRate: 5
   range: 10
