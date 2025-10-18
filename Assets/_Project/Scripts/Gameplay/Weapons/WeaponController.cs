@@ -9,6 +9,9 @@ namespace ZombieWar.Gameplay.Weapons
     [RequireComponent(typeof(TargetingSystem))]
     public class WeaponController : MonoBehaviour
     {
+        [Header("Animation")]
+        [SerializeField] private Animator animator;
+
         [Header("Weapon Slots")]
         [SerializeField] private WeaponData currentWeapon;
         [SerializeField] private WeaponData secondaryWeapon;
@@ -49,6 +52,7 @@ namespace ZombieWar.Gameplay.Weapons
         {
             GameEvent.OnSwapWeaponRequested += SwapWeapons;
             GameEvent.OnAttack += Attack;
+            // GameEvent.OnDeath +=  
         }
 
         private void OnDisable()
@@ -268,13 +272,16 @@ namespace ZombieWar.Gameplay.Weapons
             {
                 AudioManager.Instance.PlaySFX(weapon.fireSound);
             }
-            
+
             // Spawn muzzle flash
             if (weapon.muzzleFlashEffect != null && firePoint != null)
             {
                 GameObject muzzleFlash = Instantiate(weapon.muzzleFlashEffect, firePoint.position, firePoint.rotation);
                 Destroy(muzzleFlash, 0.1f);
             }
+
+            // animator.SetTrigger("Fire");
+            animator.Play("Shoot", 1, 0f);
         }
         
         private void UpdateWeaponDisplay()
@@ -291,9 +298,9 @@ namespace ZombieWar.Gameplay.Weapons
                 GameObject weaponVisual = Instantiate(currentWeapon.weaponPrefab, weaponModel);
             }
         }
-        
+
         #endregion
-        
+
         #region Public API
         public void EquipWeapon(WeaponData newWeapon)
         {

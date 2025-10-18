@@ -14,6 +14,7 @@ namespace ZombieWar.Gameplay.Combat
         private float currentHealth;
 
         public float CurrentHealth => currentHealth;
+        public bool IsDead => currentHealth <= 0f;
 
         public event Action<float, float> OnHealthChanged;
         public event Action OnDeath;
@@ -47,7 +48,7 @@ namespace ZombieWar.Gameplay.Combat
 
         private void Die()
         {
-            Destroy(gameObject, 3f);
+            Destroy(gameObject, 2f);
         }
     }
 }

@@ -2362,6 +2362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a2255f1e721b43a2ab13ae257e80a0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 6093409599443217793}
   currentWeapon: {fileID: 11400000, guid: d93cdea96b11243fbbb069399dc9d2b5, type: 2}
   secondaryWeapon: {fileID: 11400000, guid: 632f8a7705f6a4b54bd837ef241e8f02, type: 2}
   firePoint: {fileID: 0}
@@ -2381,6 +2382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffeb3e75f34e1487b8654bdc93bce0b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 6093409599443217793}
   maxHealth: 100
   hurtSound: {fileID: 8300000, guid: 7382f8d694e4e4246baf07d36afa20f8, type: 3}
   deathSound: {fileID: 8300000, guid: b96019c6f29af4be2a3e85473d322d1e, type: 3}

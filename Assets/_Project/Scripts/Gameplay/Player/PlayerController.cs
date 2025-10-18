@@ -1,4 +1,5 @@
 using UnityEngine;
+using ZombieWar.Core.Events;
 using ZombieWar.Data;
 using ZombieWar.Gameplay.Combat;
 using ZombieWar.Gameplay.Weapons;
@@ -8,6 +9,7 @@ namespace ZombieWar.Gameplay.Player
     [RequireComponent(typeof(CharacterController), typeof(WeaponController))]
     public class PlayerController : MonoBehaviour
     {
+
         [Header("Input")]
         public FloatingJoystick joystick;
         
@@ -45,7 +47,7 @@ namespace ZombieWar.Gameplay.Player
                 weaponController = GetComponent<WeaponController>();
             }
         }
-        
+
         private void Update()
         {
             HandleInput();
@@ -117,10 +119,7 @@ namespace ZombieWar.Gameplay.Player
                 }
             }
         }
-        
-        /// <summary>
-        /// Equip a weapon through the player controller
-        /// </summary>
+
         public void EquipWeapon(WeaponData weapon)
         {
             if (weaponController != null)

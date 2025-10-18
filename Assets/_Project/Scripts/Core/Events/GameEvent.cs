@@ -10,6 +10,7 @@ namespace ZombieWar.Core.Events
         public static System.Action OnSwapWeaponRequested;
         public static System.Action OnWeaponSwitched;
         public static System.Action OnAttack;
+        public static System.Action OnDeath;
 
         #endregion
     }

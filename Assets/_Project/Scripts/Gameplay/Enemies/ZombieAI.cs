@@ -3,47 +3,96 @@ using UnityEngine.AI;
 using ZombieWar.Utilities;
 using ZombieWar.Data;
 using ZombieWar.Gameplay.Combat;
+using System.Collections;
 
-namespace ZombieWar.Gameplay.Enemies
+namespace ZombieWar.Gameplay.Enemy
 {
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(IDamageable))]
     public class ZombieAI : StateMachine
     {
-        public Transform player;
-        
+        public Transform target;
+        public Animator animator;
+
         [Header("AI Settings")]
-        public float detectionRange = 10f;
         public float attackRange = 2f;
+        public float attackSpeed = 2f;
         public LayerMask playerLayer = 1;
-        
+
         private NavMeshAgent agent;
-        private CharacterHealth health;
+        private EnemyHealth health;
+        private CharacterHealth targetHealth;
         
         // States
         private IdleState idleState;
         private ChaseState chaseState;
         private AttackState attackState;
         private DeadState deadState;
+
+        private float lastAttackTime;
+        private float lastTimeHurt;
         
-        public Transform Player => player;
+        public Transform Target => target;
         public NavMeshAgent Agent => agent;
-        public CharacterHealth Health => health;
-        public float DetectionRange => detectionRange;
+        public CharacterHealth TargetHealth => targetHealth;
         public float AttackRange => attackRange;
         
         private void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
-            health = GetComponent<CharacterHealth>();
+            health = GetComponent<EnemyHealth>();
+            health.OnHealthChanged += OnHealthChanged;
+            health.OnDeath += OnDeath;
+
+            if (target != null)
+            {
+                targetHealth = target.GetComponent<CharacterHealth>();
+            }
             
-            InitializeStates();
-            InitializeAgent();
+            // InitializeStates();
+            // InitializeAgent();
         }
-        
+
         private void Start()
         {
             ChangeState(idleState);
+        }
+
+        private void Update()
+        {
+            if (health.IsDead || target == null) return;
+
+            if (IsInAttackRange())
+            {
+                agent.isStopped = true;
+
+                if (Time.time >= lastAttackTime + attackSpeed)
+                {
+                    Debug.LogError("Start Attack");
+                    animator.SetTrigger("Attack");
+                    lastAttackTime = Time.time;
+                    StartCoroutine(DelayAttack());
+                }
+            }
+            else
+            {
+                if (Time.time >= lastTimeHurt + 1f)
+                {
+                    agent.isStopped = false;
+                    agent.SetDestination(target.position);
+                }
+            }
+
+            animator.SetFloat("Speed", agent.velocity.magnitude);
+        }
+
+        public void SetTarget(Transform newTarget)
+        {
+            target = newTarget;
+            if (target != null)
+            {
+                targetHealth = target.GetComponent<CharacterHealth>();
+            }
         }
         
         private void InitializeStates()
@@ -61,26 +110,39 @@ namespace ZombieWar.Gameplay.Enemies
             //     agent.speed = zombieStats.moveSpeed;
             // }
         }
-        
-        public bool CanSeePlayer()
-        {
-            if (player == null) return false;
-            
-            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-            return distanceToPlayer <= detectionRange;
-        }
-        
+
         public bool IsInAttackRange()
         {
-            if (player == null) return false;
-            
-            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-            return distanceToPlayer <= attackRange;
+            if (target == null) return false;
+
+            float distanceToTarget = Vector3.Distance(transform.position, target.position);
+            return distanceToTarget <= attackRange;
+        }
+
+        public IEnumerator DelayAttack()
+        {
+            yield return new WaitForSeconds(1f);
+
+            if (IsInAttackRange() && targetHealth != null)
+            {
+                Debug.LogError("Attack!");
+                targetHealth.TakeDamage(10);
+            }
+        }
+        
+        public void OnHealthChanged(float currentHealth, float maxHealth)
+        {
+            agent.isStopped = true;
+            lastTimeHurt = Time.time;
+
+            // animator.SetTrigger("Hurt");
+            animator.Play("Hurt", 1, 0f);
         }
         
         public void OnDeath()
         {
-            ChangeState(deadState);
+            // animator.SetTrigger("Die");
+            animator.Play("Die", 1, 0f);
         }
     }
     
@@ -101,16 +163,11 @@ namespace ZombieWar.Gameplay.Enemies
         
         public override void Update()
         {
-            if (zombie.Health.IsDead)
-            {
-                zombie.OnDeath();
-                return;
-            }
-            
-            if (zombie.CanSeePlayer())
-            {
-                zombie.ChangeState(new ChaseState(zombie));
-            }
+            // if (zombie.Health.IsDead)
+            // {
+            //     zombie.OnDeath();
+            //     return;
+            // }
         }
     }
     
@@ -130,17 +187,11 @@ namespace ZombieWar.Gameplay.Enemies
         
         public override void Update()
         {
-            if (zombie.Health.IsDead)
-            {
-                zombie.OnDeath();
-                return;
-            }
-            
-            if (!zombie.CanSeePlayer())
-            {
-                zombie.ChangeState(new IdleState(zombie));
-                return;
-            }
+            // if (zombie.Health.IsDead)
+            // {
+            //     zombie.OnDeath();
+            //     return;
+            // }
             
             if (zombie.IsInAttackRange())
             {
@@ -148,7 +199,7 @@ namespace ZombieWar.Gameplay.Enemies
                 return;
             }
             
-            zombie.Agent.SetDestination(zombie.Player.position);
+            // zombie.Agent.SetDestination(zombie.Player.position);
         }
     }
     
@@ -169,17 +220,17 @@ namespace ZombieWar.Gameplay.Enemies
         
         public override void Update()
         {
-            if (zombie.Health.IsDead)
-            {
-                zombie.OnDeath();
-                return;
-            }
+            // if (zombie.Health.IsDead)
+            // {
+            //     zombie.OnDeath();
+            //     return;
+            // }
             
-            if (!zombie.IsInAttackRange())
-            {
-                zombie.ChangeState(new ChaseState(zombie));
-                return;
-            }
+            // if (!zombie.IsInAttackRange())
+            // {
+            //     zombie.ChangeState(new ChaseState(zombie));
+            //     return;
+            // }
             
             // Attack logic
             // float attackCooldown = zombie.zombieStats ? zombie.zombieStats.attackCooldown : 1f;
@@ -196,7 +247,7 @@ namespace ZombieWar.Gameplay.Enemies
             Debug.Log($"{zombie.name} attacks player!");
             
             // Try to damage player
-            var playerHealth = zombie.Player.GetComponent<IDamageable>();
+            // var playerHealth = zombie.Player.GetComponent<IDamageable>();
             // if (playerHealth != null && zombie.zombieStats != null)
             // {
             //     playerHealth.TakeDamage(zombie.zombieStats.attackDamage);

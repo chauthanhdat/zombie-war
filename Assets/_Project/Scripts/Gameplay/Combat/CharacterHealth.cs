@@ -6,6 +6,8 @@ namespace ZombieWar.Gameplay.Combat
 {
     public class CharacterHealth : MonoBehaviour, IDamageable
     {
+        [SerializeField] private Animator animator;
+
         [SerializeField] private float maxHealth = 100f;
 
         [Header("Audio Clips")]
@@ -43,10 +45,13 @@ namespace ZombieWar.Gameplay.Combat
             {
                 Die();
                 AudioManager.Instance.PlaySFX(deathSound);
+                animator.SetTrigger("Die");
+                // animator.Play("Die", 1, 0f);
             }
             else
             {
                 AudioManager.Instance.PlaySFX(hurtSound);
+                animator.Play("Hurt", 1, 0f);
             }
         }
         
@@ -61,6 +66,7 @@ namespace ZombieWar.Gameplay.Combat
         private void Die()
         {
             OnDeath?.Invoke();
+            GameEvent.OnDeath?.Invoke();
         }
     }
 }

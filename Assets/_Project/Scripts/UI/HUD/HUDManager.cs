@@ -4,6 +4,7 @@ using TMPro;
 using ZombieWar.Gameplay.Combat;
 using ZombieWar.Core.Events;
 using DG.Tweening;
+using System.Collections;
 
 namespace ZombieWar.UI.HUD
 {
@@ -34,6 +35,10 @@ namespace ZombieWar.UI.HUD
         [Header("Damage Indicators")]
         public GameObject damageIndicatorPrefab;
         public Transform damageIndicatorParent;
+
+        [Header("UI")]
+        public LevelStartUI levelStartUI;
+        public LevelEndUI levelEndUI;
         
         private CharacterHealth playerHealth;
         private int currentScore = 0;
@@ -188,26 +193,41 @@ namespace ZombieWar.UI.HUD
         {
             CreateScreenFlash();
         }
-        
+
         private void CreateScreenFlash()
         {
             // Create temporary overlay for damage flash
             GameObject flashOverlay = new GameObject("DamageFlash");
             flashOverlay.transform.SetParent(transform);
-            
+
             Image flashImage = flashOverlay.AddComponent<Image>();
             flashImage.color = new Color(1f, 0f, 0f, 0.3f);
             flashImage.raycastTarget = false;
-            
+
             RectTransform rect = flashOverlay.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
             rect.sizeDelta = Vector2.zero;
             rect.anchoredPosition = Vector2.zero;
-            
+
             // Fade out with DOTween
             flashImage.DOFade(0f, 0.5f)
                 .OnComplete(() => Destroy(flashOverlay));
+        }
+
+        public IEnumerator ShowLevelStartUI(string title)
+        {
+            if (levelStartUI != null)
+            {
+                levelStartUI.gameObject.SetActive(true);
+                yield return levelStartUI.Show(title);
+            }
+        }
+        
+        public void ShowLevelEndUI(string tile, string subtitle)
+        {
+            levelEndUI.gameObject.SetActive(true);
+            levelEndUI.Show(tile, subtitle);
         }
     }
 }
