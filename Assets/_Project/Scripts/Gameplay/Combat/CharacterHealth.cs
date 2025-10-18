@@ -7,6 +7,11 @@ namespace ZombieWar.Gameplay.Combat
     public class CharacterHealth : MonoBehaviour, IDamageable
     {
         [SerializeField] private float maxHealth = 100f;
+
+        [Header("Audio Clips")]
+        [SerializeField] private AudioClip hurtSound;
+        [SerializeField] private AudioClip deathSound;
+
         private float currentHealth;
 
         public float CurrentHealth => currentHealth;
@@ -33,10 +38,15 @@ namespace ZombieWar.Gameplay.Combat
             
             currentHealth = Mathf.Max(0f, currentHealth - damageAmount);
             OnHealthChanged?.Invoke(currentHealth, maxHealth);
-            
+
             if (IsDead)
             {
                 Die();
+                AudioManager.Instance.PlaySFX(deathSound);
+            }
+            else
+            {
+                AudioManager.Instance.PlaySFX(hurtSound);
             }
         }
         

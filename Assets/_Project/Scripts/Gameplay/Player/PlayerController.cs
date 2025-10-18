@@ -1,5 +1,6 @@
 using UnityEngine;
 using ZombieWar.Data;
+using ZombieWar.Gameplay.Combat;
 using ZombieWar.Gameplay.Weapons;
 
 namespace ZombieWar.Gameplay.Player
@@ -9,10 +10,6 @@ namespace ZombieWar.Gameplay.Player
     {
         [Header("Input")]
         public FloatingJoystick joystick;
-        public KeyCode runKey = KeyCode.LeftShift;
-
-        [Header("Movement Settings")]
-        public float runSpeedMultiplier = 1.5f;
         
         [Header("Gravity Settings")]
         public float gravity = -9.81f;
@@ -20,9 +17,12 @@ namespace ZombieWar.Gameplay.Player
         
         [Header("Components")]
         public Animator animator;
-        
+
         [Header("Weapon System")]
         public WeaponController weaponController;
+
+        [Header("Combat System")]
+        public CharacterHealth characterHealth;
         
         private CharacterController characterController;
         private Vector3 moveDirection;
@@ -31,8 +31,6 @@ namespace ZombieWar.Gameplay.Player
         
         // Properties
         public bool IsMoving => moveDirection.magnitude > 0.1f;
-        public bool IsRunning => isRunning;
-        public float CurrentSpeed => isRunning ? MoveSpeed * runSpeedMultiplier : MoveSpeed;
         public bool IsGrounded => characterController.isGrounded;
         public WeaponController WeaponController => weaponController;
         
@@ -54,6 +52,15 @@ namespace ZombieWar.Gameplay.Player
             HandleGravity();
             HandleMovement();
             HandleRotation();
+
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                var health = GetComponent<CharacterHealth>();
+                if (health != null)
+                {
+                    health.TakeDamage(10);
+                }
+            }
         }
 
         private void HandleInput()
@@ -62,7 +69,6 @@ namespace ZombieWar.Gameplay.Player
             float vertical = joystick.Vertical;
 
             moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
-            isRunning = Input.GetKey(runKey) && IsMoving;
         }
         
         private void HandleGravity()
@@ -85,7 +91,7 @@ namespace ZombieWar.Gameplay.Player
         private void HandleMovement()
         {
             // Horizontal movement
-            Vector3 move = moveDirection * CurrentSpeed;
+            Vector3 move = moveDirection * MoveSpeed;
             
             // Combine horizontal movement with vertical velocity (gravity)
             Vector3 finalMovement = new Vector3(move.x, velocity.y, move.z);
@@ -112,11 +118,6 @@ namespace ZombieWar.Gameplay.Player
             }
         }
         
-        public void SetMoveDirection(Vector3 direction)
-        {
-            moveDirection = direction.normalized;
-        }
-        
         /// <summary>
         /// Equip a weapon through the player controller
         /// </summary>
@@ -126,38 +127,6 @@ namespace ZombieWar.Gameplay.Player
             {
                 weaponController.EquipWeapon(weapon);
             }
-        }
-        
-        /// <summary>
-        /// Get current weapon info for UI
-        /// </summary>
-        public WeaponData GetCurrentWeapon()
-        {
-            return weaponController?.CurrentWeapon;
-        }
-        
-        /// <summary>
-        /// Reset vertical velocity (useful for teleporting or respawning)
-        /// </summary>
-        public void ResetVerticalVelocity()
-        {
-            velocity.y = 0f;
-        }
-        
-        /// <summary>
-        /// Apply an upward force (for jumping or knockback effects)
-        /// </summary>
-        public void ApplyVerticalForce(float force)
-        {
-            velocity.y = force;
-        }
-        
-        /// <summary>
-        /// Get current vertical velocity
-        /// </summary>
-        public float GetVerticalVelocity()
-        {
-            return velocity.y;
         }
     }
 }

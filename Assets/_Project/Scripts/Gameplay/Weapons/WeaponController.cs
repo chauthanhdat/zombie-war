@@ -2,9 +2,11 @@ using UnityEngine;
 using ZombieWar.Data;
 using ZombieWar.Core.Events;
 using System.Collections;
+using ZombieWar.Gameplay.Player;
 
 namespace ZombieWar.Gameplay.Weapons
 {
+    [RequireComponent(typeof(TargetingSystem))]
     public class WeaponController : MonoBehaviour
     {
         [Header("Weapon Slots")]
@@ -23,6 +25,7 @@ namespace ZombieWar.Gameplay.Weapons
         private float lastFireTime;
         private float lastMeleeTime;
         private Camera playerCamera;
+        private TargetingSystem targetingSystem;
 
         // Properties
         public WeaponData CurrentWeapon => currentWeapon;
@@ -35,7 +38,9 @@ namespace ZombieWar.Gameplay.Weapons
         private void Start()
         {
             InitializeWeapons();
-            playerCamera = UnityEngine.Camera.main;
+
+            playerCamera = Camera.main;
+            targetingSystem = GetComponent<TargetingSystem>();
 
             UpdateWeaponDisplay();
         }
@@ -87,6 +92,8 @@ namespace ZombieWar.Gameplay.Weapons
             if (currentWeapon.weaponType == WeaponType.Ranged)
             {
                 TryFireRanged();
+
+                targetingSystem.CurrentTarget.GetComponent<IDamageable>()?.TakeDamage(currentWeapon.damage);
             }
             else if (currentWeapon.weaponType == WeaponType.Melee)
             {

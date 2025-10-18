@@ -10,6 +10,7 @@ namespace ZombieWar.UI.HUD
     public class HUDManager : MonoBehaviour
     {
         [Header("Health UI")]
+        public Slider healthBarDelay;
         public Slider healthBar;
         public TextMeshProUGUI healthText;
         public Image healthBarEffect;
@@ -34,10 +35,6 @@ namespace ZombieWar.UI.HUD
         public GameObject damageIndicatorPrefab;
         public Transform damageIndicatorParent;
         
-        [Header("Events")]
-        // public GameEvent OnHealthUpdated;
-        // public GameEvent OnScoreUpdated;
-        
         private CharacterHealth playerHealth;
         private int currentScore = 0;
         private int killCount = 0;
@@ -49,11 +46,8 @@ namespace ZombieWar.UI.HUD
         
         public void InitializeHUD()
         {
-            // Find player health component
             FindPlayerHealth();
-            
-            // Initialize UI elements
-            UpdateHealthDisplay();
+            UpdateHealthDisplay(playerHealth.CurrentHealth, playerHealth.MaxHealth);
             UpdateScore(0);
             UpdateKillCount(0);
             UpdateWaveInfo(1, 0);
@@ -67,36 +61,31 @@ namespace ZombieWar.UI.HUD
                 if (player != null)
                 {
                     playerHealth = player.GetComponent<CharacterHealth>();
-                }
-                else
-                {
-                    Debug.LogWarning("HUDManager: No player found with 'Player' tag. Health display may not work correctly.");
+                    playerHealth.OnHealthChanged += UpdateHealthDisplay;
                 }
             }
         }
         
-        public void SetPlayerHealth(CharacterHealth health)
-        {
-            playerHealth = health;
-            UpdateHealthDisplay();
-        }
-        
-        public void UpdateHealthDisplay()
+        public void UpdateHealthDisplay(float currentHealth, float maxHealth)
         {
             if (playerHealth == null || healthBar == null) return;
-            
+
             float healthPercentage = playerHealth.HealthPercentage;
             
+            if (healthBar.value > healthPercentage)
+            {
+                OnPlayerDamaged();
+            }
+            
             // Animate health bar smoothly with DOTween
-            healthBar.DOValue(healthPercentage, 0.5f).SetEase(Ease.OutQuart);
+            healthBar.DOValue(healthPercentage, 0f).SetEase(Ease.OutQuart);
+            healthBarDelay.DOValue(healthPercentage, 0.5f).SetEase(Ease.OutQuart);
             
             // Update health text
             if (healthText != null)
             {
                 healthText.text = $"{playerHealth.CurrentHealth:F0}/{playerHealth.MaxHealth:F0}";
             }
-            
-            // OnHealthUpdated?.Invoke();
         }
         
         public void UpdateScore(int newScore)
@@ -111,8 +100,6 @@ namespace ZombieWar.UI.HUD
                     scoreText.text = $"Score: {x:N0}";
                 }, currentScore, 1f).SetEase(Ease.OutQuart);
             }
-            
-            // OnScoreUpdated?.Invoke();
         }
         
         public void AddScore(int points)
@@ -190,28 +177,6 @@ namespace ZombieWar.UI.HUD
                 .OnComplete(() => Destroy(indicator));
         }
         
-        public void SetCrosshairVisible(bool visible)
-        {
-            if (crosshair != null)
-            {
-                crosshair.SetActive(visible);
-                
-                if (visible)
-                {
-                    // Add a subtle pulse animation to the crosshair
-                    crosshair.transform.DOScale(1.1f, 1f)
-                        .SetLoops(-1, LoopType.Yoyo)
-                        .SetEase(Ease.InOutSine);
-                }
-                else
-                {
-                    // Stop the pulse animation
-                    crosshair.transform.DOKill();
-                    crosshair.transform.localScale = Vector3.one;
-                }
-            }
-        }
-        
         public void ShowReloadIndicator()
         {
             // Implement reload UI feedback
@@ -221,9 +186,6 @@ namespace ZombieWar.UI.HUD
         // Call this when player takes damage
         public void OnPlayerDamaged()
         {
-            UpdateHealthDisplay();
-            
-            // Screen flash effect with DOTween
             CreateScreenFlash();
         }
         

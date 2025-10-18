@@ -63,7 +63,7 @@ namespace ZombieWar.Gameplay.Player
             if (direction == Vector3.zero) return;
 
             Quaternion targetRotation = Quaternion.LookRotation(direction);
-            indicator.rotation = Quaternion.Slerp(indicator.rotation, targetRotation, indicatorRotateSpeed * Time.deltaTime);
+            indicator.rotation = targetRotation;
         }
     }
 }

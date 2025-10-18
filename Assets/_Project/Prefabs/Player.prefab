@@ -6327,6 +6327,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  hurtSound: {fileID: 8300000, guid: 7382f8d694e4e4246baf07d36afa20f8, type: 3}
+  deathSound: {fileID: 8300000, guid: b96019c6f29af4be2a3e85473d322d1e, type: 3}
 --- !u!114 &6630652926983971786
 MonoBehaviour:
   m_ObjectHideFlags: 0
