@@ -9,7 +9,7 @@ namespace ZombieWar.Gameplay.Enemy
         [SerializeField] private GameObject enemyPrefab;
         [SerializeField] private Transform player;
         [SerializeField] private Transform[] spawnPoints;
-        [SerializeField] private float spawnInterval = 10f;
+        [SerializeField] private float spawnInterval = 5f;
 
         private int enemyCount = 0;
 
@@ -20,9 +20,25 @@ namespace ZombieWar.Gameplay.Enemy
 
         private IEnumerator SpawnEnemies()
         {
-            while (enemyCount < 10)
+            while (enemyCount < 1)
             {
                 SpawnEnemy();
+                yield return new WaitForSeconds(spawnInterval);
+            }
+            
+            float elapsedTime = 0f;
+            int enemiesToSpawn = 1;
+
+            while (elapsedTime < 180f) // 3 minutes
+            {
+                for (int i = 0; i < enemiesToSpawn; i++)
+                {
+                    if (enemyCount >= 100) yield break;
+                    SpawnEnemy();
+                }
+
+                enemiesToSpawn++; // Gradually increase the number of enemies to spawn
+                elapsedTime += spawnInterval;
                 yield return new WaitForSeconds(spawnInterval);
             }
         }
@@ -34,6 +50,21 @@ namespace ZombieWar.Gameplay.Enemy
             enemy.GetComponent<ZombieAI>().SetTarget(player);
 
             enemyCount++;
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (spawnPoints != null)
+            {
+                Gizmos.color = Color.red;
+                foreach (var spawnPoint in spawnPoints)
+                {
+                    if (spawnPoint != null)
+                    {
+                        Gizmos.DrawSphere(spawnPoint.position, 2f);
+                    }
+                }
+            }
         }
     }
 }

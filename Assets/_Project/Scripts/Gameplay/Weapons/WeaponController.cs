@@ -100,6 +100,11 @@ namespace ZombieWar.Gameplay.Weapons
                 if (targetingSystem.CurrentTarget != null)
                 {
                     targetingSystem.CurrentTarget.GetComponent<IDamageable>()?.TakeDamage(currentWeapon.damage);
+
+                    Vector3 directionToTarget = targetingSystem.CurrentTarget.position - transform.position;
+                    directionToTarget.y = 0;
+                    Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                    transform.rotation = targetRotation;
                 }
             }
             else if (currentWeapon.weaponType == WeaponType.Melee)
@@ -129,15 +134,15 @@ namespace ZombieWar.Gameplay.Weapons
             if (currentWeapon == null || currentWeapon.weaponType != WeaponType.Ranged) return;
             
             // Perform raycast from camera center
-            if (playerCamera != null)
-            {
-                Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0f));
+            // if (playerCamera != null)
+            // {
+            //     Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0f));
                 
-                if (Physics.Raycast(ray, out RaycastHit hit, currentWeapon.range))
-                {
-                    ProcessRangedHit(hit, currentWeapon);
-                }
-            }
+            //     if (Physics.Raycast(ray, out RaycastHit hit, currentWeapon.range))
+            //     {
+            //         ProcessRangedHit(hit, currentWeapon);
+            //     }
+            // }
             
             // Play effects
             PlayFireEffects(currentWeapon);
@@ -282,6 +287,8 @@ namespace ZombieWar.Gameplay.Weapons
 
             // animator.SetTrigger("Fire");
             animator.Play("Shoot", 1, 0f);
+            firePoint.gameObject.SetActive(false);
+            firePoint.gameObject.SetActive(true);
         }
         
         private void UpdateWeaponDisplay()
@@ -296,6 +303,11 @@ namespace ZombieWar.Gameplay.Weapons
             if (currentWeapon != null && currentWeapon.weaponPrefab != null)
             {
                 GameObject weaponVisual = Instantiate(currentWeapon.weaponPrefab, weaponModel);
+                var gun = weaponVisual.GetComponent<Gun>();
+                if (gun != null)
+                {
+                    firePoint = gun.firePoint;
+                }
             }
         }
 

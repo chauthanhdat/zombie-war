@@ -44,6 +44,9 @@ namespace ZombieWar.Gameplay.Player
 
             foreach (var hit in hits)
             {
+                var damageable = hit.transform.GetComponent<IDamageable>();
+                if (damageable == null || damageable.CurrentHealth <= 0) continue;
+
                 float distance = Vector3.Distance(transform.position, hit.transform.position);
                 if (distance < closestDistance)
                 {

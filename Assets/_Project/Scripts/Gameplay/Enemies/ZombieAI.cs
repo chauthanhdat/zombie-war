@@ -4,6 +4,7 @@ using ZombieWar.Utilities;
 using ZombieWar.Data;
 using ZombieWar.Gameplay.Combat;
 using System.Collections;
+using ZombieWar.Core.Events;
 
 namespace ZombieWar.Gameplay.Enemy
 {
@@ -13,6 +14,9 @@ namespace ZombieWar.Gameplay.Enemy
     {
         public Transform target;
         public Animator animator;
+
+        public AudioClip hurtSound;
+        public AudioClip deathSound;
 
         [Header("AI Settings")]
         public float attackRange = 2f;
@@ -137,12 +141,18 @@ namespace ZombieWar.Gameplay.Enemy
 
             // animator.SetTrigger("Hurt");
             animator.Play("Hurt", 1, 0f);
+            AudioManager.Instance.PlaySFX(hurtSound);
         }
         
         public void OnDeath()
         {
             // animator.SetTrigger("Die");
             animator.Play("Die", 1, 0f);
+            AudioManager.Instance.PlaySFX(deathSound);
+
+            StopAllCoroutines();
+            
+            GameEvent.OnZombieKilled?.Invoke();
         }
     }
     

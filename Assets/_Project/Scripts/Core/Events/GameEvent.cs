@@ -12,6 +12,8 @@ namespace ZombieWar.Core.Events
         public static System.Action OnAttack;
         public static System.Action OnDeath;
 
+        public static System.Action OnZombieKilled;
+
         #endregion
     }
 }

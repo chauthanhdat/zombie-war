@@ -16,7 +16,7 @@ MonoBehaviour:
   weaponType: 1
   weaponIcon: {fileID: 21300000, guid: 2d193da356502104ab1cb2d5da99ef54, type: 3}
   weaponPrefab: {fileID: 3356501522573297259, guid: 958900c353cbd41f887533bbf0e0d0de, type: 3}
-  damage: 25
+  damage: 10
   fireRate: 5
   range: 10
   ammoCapacity: 8

@@ -55,6 +55,7 @@ namespace ZombieWar.Gameplay.Player
             HandleMovement();
             HandleRotation();
 
+#if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.D))
             {
                 var health = GetComponent<CharacterHealth>();
@@ -63,6 +64,7 @@ namespace ZombieWar.Gameplay.Player
                     health.TakeDamage(10);
                 }
             }
+#endif
         }
 
         private void HandleInput()

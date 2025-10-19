@@ -1434,6 +1434,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   animator: {fileID: 7827100844053625980}
+  hurtSound: {fileID: 8300000, guid: dc519a3ed29094eee8adc789ae78aec4, type: 3}
+  deathSound: {fileID: 8300000, guid: b19e4fd8643844faf8f9cddcec40447f, type: 3}
   attackRange: 2
   attackSpeed: 5
   playerLayer:

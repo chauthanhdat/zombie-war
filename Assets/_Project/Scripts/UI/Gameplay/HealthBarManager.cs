@@ -54,6 +54,7 @@ namespace ZombieWar.Gameplay
             }
 
             EnemyHealthBarUI healthBar = healthBarPool.Dequeue();
+            healthBar.transform.position = new Vector3(100000, 100000, 100000);
             healthBar.gameObject.SetActive(true);
             healthBar.Setup(enemyHealth, enemyHealthBarAnchor, ReturnNormalHealthBarToPool);
             activeHealthBars.Add(enemyHealth, healthBar);

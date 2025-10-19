@@ -57,7 +57,7 @@ namespace ZombieWar
             targetHealth.OnHealthChanged -= UpdateHealthBar;
             targetHealth.OnDeath -= OnTargetDeath;
 
-            Invoke(nameof(DelayReturn), 1f);
+            Invoke(nameof(DelayReturn), 0f);
         }
 
         private void DelayReturn()
